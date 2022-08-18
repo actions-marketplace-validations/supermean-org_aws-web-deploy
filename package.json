@@ -1,0 +1,28 @@
+{
+  "name": "cloudfront-manager",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:mean-dao/cloudfront-manager.git",
+  "author": "MeanDao",
+  "license": "MIT",
+  "keywords": [
+    "GitHub Actions",
+    "aws",
+    "cloudfront",
+    "distribution",
+    "release"
+  ],
+  "scripts": {
+    "build": "tsc index.ts --lib es5"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.3",
+    "aws-sdk": "^2.1197.0",
+    "fs-extra": "^10.1.0"
+  }
+}
