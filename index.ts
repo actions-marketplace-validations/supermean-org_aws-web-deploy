@@ -5,13 +5,13 @@ const mainFn = async (): Promise<void> => {
     const originPath = getInput('ORIGIN_PATH', { required: true });
     const awsAccessKeyId = getInput('AWS_KEY_ID', { required: true });
     const awsSecretAccessKey = getInput('AWS_SECRET', { required: true });
-    const distributionId = getInput('AWS_CLOUDFRONT_DISTRIBUTION_ID', { required: true });
+    const distributionId = getInput('AWS_DISTRIBUTION_ID', { required: true });
     const originPathIndex = parseInt(getInput('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = getInput('AWS_REGION') || 'us-east-1';
 
     const errorList: string[] = [];
     if (!distributionId) {
-        errorList.push('AWS_CLOUDFRONT_DISTRIBUTION_ID is required')
+        errorList.push('AWS_DISTRIBUTION_ID is required')
     }
 
     if (!originPath) {

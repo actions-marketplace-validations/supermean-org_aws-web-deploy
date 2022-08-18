@@ -1,0 +1,28 @@
+name: 'Mean CloudFront Toolkit'
+description: 'GitHub Action for updating the Origin Path for given Distribution'
+author: '@mean-dao'
+inputs:
+  ORIGIN_PATH:
+    description: 'New origin path'
+    required: true
+  AWS_DISTRIBUTION_ID:
+    description: 'AWS Cloudfront Distribution ID'
+    required: true
+  AWS_KEY_ID:
+    description: 'AWS_ACCESS_KEY_ID'
+    required: true
+  AWS_SECRET:
+    description: 'AWS_SECRET_ACCESS_KEY'
+    required: true
+  AWS_REGION:
+    description: 'Optional. Default is us-east-1'
+    required: false
+  ORIGIN_PATH_INDEX:
+    description: 'Optional. Default is 0'
+    required: false
+runs:
+  using: 'node18'
+  main: 'index.js'
+branding:
+  icon: truck
+  color: red
