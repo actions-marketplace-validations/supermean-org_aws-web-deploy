@@ -21,7 +21,7 @@ inputs:
     description: 'Optional. Default is 0'
     required: false
 runs:
-  using: 'node18'
+  using: 'node16'
   main: 'index.js'
 branding:
   icon: truck
