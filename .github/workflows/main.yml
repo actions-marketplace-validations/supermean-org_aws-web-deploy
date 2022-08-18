@@ -23,11 +23,11 @@ jobs:
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
           
     - name: Install
-      run: yarn install && yarn build
+      run: yarn install && yarn package
       
     - name: Update Files
       uses: test-room-7/action-update-file@v1
       with:
-          file-path: '*.js'
-          commit-msg: Update JS files
+          file-path: 'dist/*.*'
+          commit-msg: Update dist files
           github-token: ${{ secrets.GITHUB_TOKEN }}
