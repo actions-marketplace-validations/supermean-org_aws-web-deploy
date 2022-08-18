@@ -1,4 +1,11 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema",
-    "additionalProperties": 
+    "compilerOptions": {
+        "strictNullChecks": false,
+        "lib": [
+            "ES2015"
+        ]
+    },
+    "files": [
+        "index.ts"
+    ]
 }
