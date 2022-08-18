@@ -46,12 +46,12 @@ var mainFn = function () { return __awaiter(void 0, void 0, void 0, function () 
                 originPath = (0, core_1.getInput)('ORIGIN_PATH', { required: true });
                 awsAccessKeyId = (0, core_1.getInput)('AWS_KEY_ID', { required: true });
                 awsSecretAccessKey = (0, core_1.getInput)('AWS_SECRET', { required: true });
-                distributionId = (0, core_1.getInput)('AWS_CLOUDFRONT_DISTRIBUTION_ID', { required: true });
+                distributionId = (0, core_1.getInput)('AWS_DISTRIBUTION_ID', { required: true });
                 originPathIndex = parseInt((0, core_1.getInput)('ORIGIN_PATH_INDEX') || '0');
                 awsRegion = (0, core_1.getInput)('AWS_REGION') || 'us-east-1';
                 errorList = [];
                 if (!distributionId) {
-                    errorList.push('AWS_CLOUDFRONT_DISTRIBUTION_ID is required');
+                    errorList.push('AWS_DISTRIBUTION_ID is required');
                 }
                 if (!originPath) {
                     errorList.push('ORIGIN_PATH is required');
