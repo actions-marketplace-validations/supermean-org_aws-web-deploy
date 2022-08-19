@@ -9,7 +9,7 @@ const mainFn = async (): Promise<void> => {
     const originPathIndex = parseInt(getInput('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = getInput('AWS_REGION') || 'us-east-1';
     const folderPath = process.env.FOLDER_PATH;
-    debug(`folderPath:`, folderPath);
+    debug(`folderPath: ${folderPath}`);
 
     const errorList: string[] = [];
     if (!distributionId) {
