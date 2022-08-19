@@ -2,19 +2,21 @@ import { getInput, setFailed, saveState, debug } from '@actions/core';
 import { CloudFrontClient, CreateInvalidationCommand, GetDistributionConfigCommand, UpdateDistributionCommand } from '@aws-sdk/client-cloudfront';
 
 const mainFn = async (): Promise<void> => {
-    const originPath = getInput('ORIGIN_PATH', { required: true });
+    let originPath = getInput('ORIGIN_PATH', { required: true });
     const awsAccessKeyId = getInput('AWS_KEY_ID', { required: true });
     const awsSecretAccessKey = getInput('AWS_SECRET', { required: true });
     const distributionId = getInput('AWS_DISTRIBUTION_ID', { required: true });
     const originPathIndex = parseInt(getInput('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = getInput('AWS_REGION') || 'us-east-1';
+    const folderPath = process.env.FOLDER_PATH;
+    debug(`folderPath:`, folderPath);
 
     const errorList: string[] = [];
     if (!distributionId) {
         errorList.push('AWS_DISTRIBUTION_ID is required')
     }
 
-    if (!originPath) {
+    if (!originPath || !folderPath) {
         errorList.push('ORIGIN_PATH is required')
     }
 
@@ -43,8 +45,8 @@ const mainFn = async (): Promise<void> => {
 
     const currentOriginPath = DistributionConfig.Origins.Items[originPathIndex].OriginPath;
     debug(`Current OriginPath: ${currentOriginPath}`);
-    DistributionConfig.Origins.Items[originPathIndex].OriginPath = originPath
-    debug(`New OriginPath: ${originPath}`);
+    DistributionConfig.Origins.Items[originPathIndex].OriginPath = folderPath || originPath
+    debug(`New OriginPath: ${folderPath || originPath}`);
 
     debug(`Updating Distribution OriginPath of index ${originPathIndex}...`);
     const updateDistributionCmd = new UpdateDistributionCommand({
