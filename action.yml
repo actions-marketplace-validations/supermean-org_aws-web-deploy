@@ -1,4 +1,4 @@
-name: 'Mean CloudFront Toolkit'
+name: 'aws-web-deploy'
 description: 'GitHub Action for updating the Origin Path for given Distribution'
 author: '@mean-dao'
 inputs:
