@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { getInput, setFailed, saveState, debug, info } from '@actions/core';
 import { CloudFrontClient, CreateInvalidationCommand, GetDistributionConfigCommand, UpdateDistributionCommand } from '@aws-sdk/client-cloudfront';
 
@@ -26,6 +27,21 @@ const mainFn = async (): Promise<void> => {
 
     if (awsS3Uri) {
         info(`main:awsS3Uri: ${awsS3Uri}`);
+    }
+
+    try {
+        info(`**** File List ****`);
+        //joining path of directory 
+        const directoryPath = './'
+        //passsing directoryPath and callback function
+        fs.readdir(directoryPath, (err, files) => {
+            //handling error
+            if (err) { info('Unable to scan directory: ' + err); }
+            else { info(files.join('\n')); }
+        });
+        info(`**** EOF File List ****`);
+    } catch (error) {
+        debug(error);
     }
 
     const client = new CloudFrontClient({ region: awsRegion });
