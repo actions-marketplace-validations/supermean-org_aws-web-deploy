@@ -1,16 +1,16 @@
-import { getInput, setFailed, saveState, debug } from '@actions/core';
+import { getInput, setFailed, saveState, debug, info } from '@actions/core';
 import { CloudFrontClient, CreateInvalidationCommand, GetDistributionConfigCommand, UpdateDistributionCommand } from '@aws-sdk/client-cloudfront';
 
 const mainFn = async (): Promise<void> => {
     let originPath = getInput('ORIGIN_PATH', { required: true });
-    const awsAccessKeyId = getInput('AWS_KEY_ID', { required: true });
-    const awsSecretAccessKey = getInput('AWS_SECRET', { required: true });
     const distributionId = getInput('AWS_DISTRIBUTION_ID', { required: true });
     const originPathIndex = parseInt(getInput('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = getInput('AWS_REGION') || 'us-east-1';
+
+    const awsS3Uri = process.env.AWS_S3_PATH;
     const folderPath = process.env.FOLDER_PATH;
     debug(`folderPath: ${folderPath}`);
-
+    info(`AWS_ACCESS_KEY_ID: is defined? ${process.env.AWS_ACCESS_KEY_ID ? true : false}`)
     const errorList: string[] = [];
     if (!distributionId) {
         errorList.push('AWS_DISTRIBUTION_ID is required')
@@ -20,25 +20,15 @@ const mainFn = async (): Promise<void> => {
         errorList.push('ORIGIN_PATH is required')
     }
 
-    if (!awsAccessKeyId) {
-        errorList.push('AWS_KEY_ID is required')
-    }
-
-    if (!awsSecretAccessKey) {
-        errorList.push('AWS_SECRET is required')
-    }
-
     if (errorList.length > 0) {
         throw new Error(errorList.join('\n'));
     }
 
-    const client = new CloudFrontClient({
-        region: awsRegion,
-        credentials: {
-            accessKeyId: awsAccessKeyId,
-            secretAccessKey: awsSecretAccessKey
-        }
-    });
+    if (awsS3Uri) {
+        info(`main:awsS3Uri: ${awsS3Uri}`);
+    }
+
+    const client = new CloudFrontClient({ region: awsRegion });
 
     const getDistributionConfigCmd = new GetDistributionConfigCommand({ Id: distributionId });
     const { DistributionConfig, ETag } = await client.send(getDistributionConfigCmd);
@@ -48,7 +38,7 @@ const mainFn = async (): Promise<void> => {
     DistributionConfig.Origins.Items[originPathIndex].OriginPath = folderPath || originPath
     debug(`New OriginPath: ${folderPath || originPath}`);
 
-    debug(`Updating Distribution OriginPath of index ${originPathIndex}...`);
+    info(`Updating Distribution OriginPath of index ${originPathIndex}...`);
     const updateDistributionCmd = new UpdateDistributionCommand({
         DistributionConfig,
         Id: distributionId,
@@ -58,7 +48,7 @@ const mainFn = async (): Promise<void> => {
     const updateRes = await client.send(updateDistributionCmd);
     debug(`Update Distribution response statusCode: ${updateRes.$metadata.httpStatusCode}`);
 
-    debug(`Requesting distribution invalidation...`);
+    info(`Requesting distribution invalidation...`);
     const createInvalidationCmd = new CreateInvalidationCommand({
         DistributionId: distributionId,
         InvalidationBatch: {
@@ -72,6 +62,8 @@ const mainFn = async (): Promise<void> => {
 
     const invalidationRes = await client.send(createInvalidationCmd);
     debug(`Invalidation response statusCode: ${invalidationRes.$metadata.httpStatusCode}`);
+
+    info("End of the job..");
 };
 
 mainFn()

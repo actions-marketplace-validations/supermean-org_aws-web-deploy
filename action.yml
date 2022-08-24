@@ -8,17 +8,14 @@ inputs:
   AWS_DISTRIBUTION_ID:
     description: 'AWS Cloudfront Distribution ID'
     required: true
-  AWS_KEY_ID:
-    description: 'AWS_ACCESS_KEY_ID'
-    required: true
-  AWS_SECRET:
-    description: 'AWS_SECRET_ACCESS_KEY'
-    required: true
   AWS_REGION:
-    description: 'Optional. Default is us-east-1'
+    description: 'Optional. Default is "us-east-1"'
     required: false
   ORIGIN_PATH_INDEX:
     description: 'Optional. Default is 0'
+    required: false
+  AWS_S3_PATH:
+    description: 'Optional. S3 bucket url (e.g. s3://.../...)'
     required: false
 runs:
   using: 'node16'
