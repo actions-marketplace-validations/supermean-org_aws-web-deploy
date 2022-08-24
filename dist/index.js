@@ -38069,20 +38069,21 @@ const mainFn = async () => {
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`main:awsS3Uri: ${awsS3Uri}`);
     }
     try {
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`**** File List ****`);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`**** File List ****`);
         //joining path of directory 
         const directoryPath = './';
         //passsing directoryPath and callback function
         fs__WEBPACK_IMPORTED_MODULE_0___default().readdir(directoryPath, (err, files) => {
             //handling error
             if (err) {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)('Unable to scan directory: ' + err);
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)('Unable to scan directory: ' + err);
             }
             else {
-                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(files.join('\n'));
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`dir: ${process.cwd()}`);
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(files.join('\n'));
             }
+            (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`**** EOF File List ****`);
         });
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`**** EOF File List ****`);
     }
     catch (error) {
         (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(error);
