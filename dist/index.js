@@ -38044,17 +38044,19 @@ __nccwpck_require__.r(__webpack_exports__);
 
 
 const mainFn = async () => {
-    const originPath = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH', { required: true });
+    let originPath = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH', { required: true });
     const awsAccessKeyId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_KEY_ID', { required: true });
     const awsSecretAccessKey = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_SECRET', { required: true });
     const distributionId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_DISTRIBUTION_ID', { required: true });
     const originPathIndex = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_REGION') || 'us-east-1';
+    const folderPath = process.env.FOLDER_PATH;
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`folderPath: ${folderPath}`);
     const errorList = [];
     if (!distributionId) {
         errorList.push('AWS_DISTRIBUTION_ID is required');
     }
-    if (!originPath) {
+    if (!originPath || !folderPath) {
         errorList.push('ORIGIN_PATH is required');
     }
     if (!awsAccessKeyId) {
@@ -38077,8 +38079,8 @@ const mainFn = async () => {
     const { DistributionConfig, ETag } = await client.send(getDistributionConfigCmd);
     const currentOriginPath = DistributionConfig.Origins.Items[originPathIndex].OriginPath;
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Current OriginPath: ${currentOriginPath}`);
-    DistributionConfig.Origins.Items[originPathIndex].OriginPath = originPath;
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`New OriginPath: ${originPath}`);
+    DistributionConfig.Origins.Items[originPathIndex].OriginPath = folderPath || originPath;
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`New OriginPath: ${folderPath || originPath}`);
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Updating Distribution OriginPath of index ${originPathIndex}...`);
     const updateDistributionCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.UpdateDistributionCommand({
         DistributionConfig,
