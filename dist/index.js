@@ -38045,13 +38045,13 @@ __nccwpck_require__.r(__webpack_exports__);
 
 const mainFn = async () => {
     let originPath = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH', { required: true });
-    const awsAccessKeyId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_KEY_ID', { required: true });
-    const awsSecretAccessKey = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_SECRET', { required: true });
     const distributionId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_DISTRIBUTION_ID', { required: true });
     const originPathIndex = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH_INDEX') || '0');
     const awsRegion = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_REGION') || 'us-east-1';
+    const awsS3Uri = process.env.AWS_S3_PATH;
     const folderPath = process.env.FOLDER_PATH;
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`folderPath: ${folderPath}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`AWS_ACCESS_KEY_ID: is defined? ${process.env.AWS_ACCESS_KEY_ID ? true : false}`);
     const errorList = [];
     if (!distributionId) {
         errorList.push('AWS_DISTRIBUTION_ID is required');
@@ -38059,29 +38059,20 @@ const mainFn = async () => {
     if (!originPath || !folderPath) {
         errorList.push('ORIGIN_PATH is required');
     }
-    if (!awsAccessKeyId) {
-        errorList.push('AWS_KEY_ID is required');
-    }
-    if (!awsSecretAccessKey) {
-        errorList.push('AWS_SECRET is required');
-    }
     if (errorList.length > 0) {
         throw new Error(errorList.join('\n'));
     }
-    const client = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.CloudFrontClient({
-        region: awsRegion,
-        credentials: {
-            accessKeyId: awsAccessKeyId,
-            secretAccessKey: awsSecretAccessKey
-        }
-    });
+    if (awsS3Uri) {
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`main:awsS3Uri: ${awsS3Uri}`);
+    }
+    const client = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.CloudFrontClient({ region: awsRegion });
     const getDistributionConfigCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.GetDistributionConfigCommand({ Id: distributionId });
     const { DistributionConfig, ETag } = await client.send(getDistributionConfigCmd);
     const currentOriginPath = DistributionConfig.Origins.Items[originPathIndex].OriginPath;
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Current OriginPath: ${currentOriginPath}`);
     DistributionConfig.Origins.Items[originPathIndex].OriginPath = folderPath || originPath;
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`New OriginPath: ${folderPath || originPath}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Updating Distribution OriginPath of index ${originPathIndex}...`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Updating Distribution OriginPath of index ${originPathIndex}...`);
     const updateDistributionCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.UpdateDistributionCommand({
         DistributionConfig,
         Id: distributionId,
@@ -38089,7 +38080,7 @@ const mainFn = async () => {
     });
     const updateRes = await client.send(updateDistributionCmd);
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Update Distribution response statusCode: ${updateRes.$metadata.httpStatusCode}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Requesting distribution invalidation...`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Requesting distribution invalidation...`);
     const createInvalidationCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.CreateInvalidationCommand({
         DistributionId: distributionId,
         InvalidationBatch: {
@@ -38102,6 +38093,7 @@ const mainFn = async () => {
     });
     const invalidationRes = await client.send(createInvalidationCmd);
     (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Invalidation response statusCode: ${invalidationRes.$metadata.httpStatusCode}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)("End of the job..");
 };
 mainFn()
     .then(() => {
