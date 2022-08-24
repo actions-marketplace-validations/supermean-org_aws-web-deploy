@@ -38037,21 +38037,24 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(2928);
-/* harmony import */ var _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7147);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(2928);
+/* harmony import */ var _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 const mainFn = async () => {
-    let originPath = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH', { required: true });
-    const distributionId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_DISTRIBUTION_ID', { required: true });
-    const originPathIndex = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('ORIGIN_PATH_INDEX') || '0');
-    const awsRegion = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('AWS_REGION') || 'us-east-1';
+    let originPath = (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput)('ORIGIN_PATH', { required: true });
+    const distributionId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput)('AWS_DISTRIBUTION_ID', { required: true });
+    const originPathIndex = parseInt((0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput)('ORIGIN_PATH_INDEX') || '0');
+    const awsRegion = (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.getInput)('AWS_REGION') || 'us-east-1';
     const awsS3Uri = process.env.AWS_S3_PATH;
     const folderPath = process.env.FOLDER_PATH;
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`folderPath: ${folderPath}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`AWS_ACCESS_KEY_ID: is defined? ${process.env.AWS_ACCESS_KEY_ID ? true : false}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`folderPath: ${folderPath}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`AWS_ACCESS_KEY_ID: is defined? ${process.env.AWS_ACCESS_KEY_ID ? true : false}`);
     const errorList = [];
     if (!distributionId) {
         errorList.push('AWS_DISTRIBUTION_ID is required');
@@ -38063,25 +38066,44 @@ const mainFn = async () => {
         throw new Error(errorList.join('\n'));
     }
     if (awsS3Uri) {
-        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`main:awsS3Uri: ${awsS3Uri}`);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`main:awsS3Uri: ${awsS3Uri}`);
     }
-    const client = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.CloudFrontClient({ region: awsRegion });
-    const getDistributionConfigCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.GetDistributionConfigCommand({ Id: distributionId });
+    try {
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`**** File List ****`);
+        //joining path of directory 
+        const directoryPath = './';
+        //passsing directoryPath and callback function
+        fs__WEBPACK_IMPORTED_MODULE_0___default().readdir(directoryPath, (err, files) => {
+            //handling error
+            if (err) {
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)('Unable to scan directory: ' + err);
+            }
+            else {
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(files.join('\n'));
+            }
+        });
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`**** EOF File List ****`);
+    }
+    catch (error) {
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(error);
+    }
+    const client = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__.CloudFrontClient({ region: awsRegion });
+    const getDistributionConfigCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__.GetDistributionConfigCommand({ Id: distributionId });
     const { DistributionConfig, ETag } = await client.send(getDistributionConfigCmd);
     const currentOriginPath = DistributionConfig.Origins.Items[originPathIndex].OriginPath;
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Current OriginPath: ${currentOriginPath}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`Current OriginPath: ${currentOriginPath}`);
     DistributionConfig.Origins.Items[originPathIndex].OriginPath = folderPath || originPath;
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`New OriginPath: ${folderPath || originPath}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Updating Distribution OriginPath of index ${originPathIndex}...`);
-    const updateDistributionCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.UpdateDistributionCommand({
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`New OriginPath: ${folderPath || originPath}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`Updating Distribution OriginPath of index ${originPathIndex}...`);
+    const updateDistributionCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__.UpdateDistributionCommand({
         DistributionConfig,
         Id: distributionId,
         IfMatch: ETag
     });
     const updateRes = await client.send(updateDistributionCmd);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Update Distribution response statusCode: ${updateRes.$metadata.httpStatusCode}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)(`Requesting distribution invalidation...`);
-    const createInvalidationCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_1__.CreateInvalidationCommand({
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`Update Distribution response statusCode: ${updateRes.$metadata.httpStatusCode}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)(`Requesting distribution invalidation...`);
+    const createInvalidationCmd = new _aws_sdk_client_cloudfront__WEBPACK_IMPORTED_MODULE_2__.CreateInvalidationCommand({
         DistributionId: distributionId,
         InvalidationBatch: {
             CallerReference: new Date().toISOString(),
@@ -38092,17 +38114,17 @@ const mainFn = async () => {
         }
     });
     const invalidationRes = await client.send(createInvalidationCmd);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.debug)(`Invalidation response statusCode: ${invalidationRes.$metadata.httpStatusCode}`);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.info)("End of the job..");
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.debug)(`Invalidation response statusCode: ${invalidationRes.$metadata.httpStatusCode}`);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.info)("End of the job..");
 };
 mainFn()
     .then(() => {
     console.log('Done...');
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.saveState)('done', 'done');
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.saveState)('done', 'done');
 })
     .catch((err) => {
     console.error(err);
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(err);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_1__.setFailed)(err);
 });
 
 })();
