@@ -30,16 +30,19 @@ const mainFn = async (): Promise<void> => {
     }
 
     try {
-        info(`**** File List ****`);
+        debug(`**** File List ****`);
         //joining path of directory 
         const directoryPath = './'
         //passsing directoryPath and callback function
-        fs.readdir(directoryPath, (err, files) => {
+        fs.readdir(directoryPath, (err: Error, files: string[]) => {
             //handling error
-            if (err) { info('Unable to scan directory: ' + err); }
-            else { info(files.join('\n')); }
+            if (err) { debug('Unable to scan directory: ' + err); }
+            else {
+                debug(`dir: ${process.cwd()}`);
+                debug(files.join('\n'));
+            }
+            debug(`**** EOF File List ****`);
         });
-        info(`**** EOF File List ****`);
     } catch (error) {
         debug(error);
     }

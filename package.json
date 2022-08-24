@@ -1,6 +1,6 @@
 {
   "name": "aws-web-deploy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.ts",
   "repository": "git@github.com:mean-dao/cloudfront-manager.git",
   "author": "MeanDao",
