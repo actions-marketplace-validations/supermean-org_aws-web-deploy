@@ -15,11 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       # your stuff
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+      # Update the Origin Path
       - name: Update OriginPath
         uses: mean-dao/cloudfront-manager@v1
         with:
           ORIGIN_PATH: '/v1/new_path'
-          AWS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DISTRIBUTION_ID: ${{ secrets.DISTRIBUTION_ID }}
 ````
